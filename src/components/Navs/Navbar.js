@@ -272,8 +272,8 @@ function Navbar(props) {
               </div>
 
               <div className="logo ml-4 flex-initial flex flex-col sm:flex-row sm:items-center sm:justify-start w-10 h-11 sm:w-64 sm:h-full items-center justify-center sm:static ml-/10 ">
-                <Link href="/"> <Image width={80} height={80} src={online ? '/logo/TeramaFlixpic.png': logo1} className=" w-8 h-8 sm:w-[2.8rem] sm:h-[2.8rem] my-1" alt="logo" /></Link>
-                <Link href="/"> <Image width={90} height={90} src={online ? '/logo/TeramaFlixnam.png' : logo2} alt="logo" className=" hidden sm:block w-[4rem] h-[1rem] sm:w-[8rem] sm:h-[1rem] " /></Link>
+                <Link href="/"> <Image width={80} height={80} src={online || !logo1 ? '/logo/TeramaFlixpic.png': logo1 } className=" w-8 h-8 sm:w-[2.8rem] sm:h-[2.8rem] my-1" alt="logo" /></Link>
+                <Link href="/"> <Image width={90} height={90} src={online || !logo2 ? '/logo/TeramaFlixnam.png' : logo2} alt="logo" className=" hidden sm:block w-[4rem] h-[1rem] sm:w-[8rem] sm:h-[1rem] " /></Link>
               </div>
 
             </div>
@@ -325,10 +325,10 @@ function Navbar(props) {
                 <button ref={compoRef} id="image" className="p-0">
                   {auto.session.Photo ?
                   <Image width={80} height={80} className="w-8 h-8 rounded-full" title={`${auto.session.PageName}`}
-                  src={online ? `${process.env.NEXT_PUBLIC_URL}/Thumbnails/${auto.session.Photo}`:profBlobUrl} alt='profile' onClick={() => handleAcPop()} />
+                  src={online || !profBlobUrl ? `${process.env.NEXT_PUBLIC_URL}/Thumbnails/${auto.session.Photo}`:profBlobUrl} alt='profile' onClick={() => handleAcPop()} />
                   :
                   <Image width={80} height={80} className="w-8 h-8 rounded-full" title={`${auto.session.PageName}`}
-                    src={online ? "/img/logo.png":profBlobUrl} alt='profile' onClick={() => handleAcPop()} />}
+                    src={online || !profBlobUrl ? "/img/logo.png":profBlobUrl} alt='profile' onClick={() => handleAcPop()} />}
                 </button>
               </div>
             }
