@@ -89,7 +89,7 @@ self.addEventListener('message', (event) => {
       uniid,
     } = event.data;
 
-    const newUrl =process.env.NEXT_PUBLIC_URL+ '/Watch?v=' + uniid;
+    const newUrl ='/Watch?v=' + uniid;
 
     caches.open(CACHE_NAME).then((cache) => {
       cache.add(newUrl);
