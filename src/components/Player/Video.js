@@ -8,6 +8,7 @@ function Video({ video }) {
   const [online, setOnline] = useState(true);
   const period = usePeriod(video.Created_at)
   const [thumbnailUrl, setThumbnailUrl] = useState(null);
+  const [profBlobUrl, setProfBlobUrl] = useState(null);
 
   useEffect(()=>{
     const handleOnlineStatusChange = () =>{
@@ -39,6 +40,26 @@ function Video({ video }) {
     if (!online && video && video.Image) {
       getThumbnailFromCache();
     }
+    const fetchProfile = async (photo) => {
+      try {
+        if (photo && !online) {
+          const cache = await caches.open('mon-site-logo')
+          const response = await cache.match(`/Thumbnails/${photo}`);
+          const blob = await response.blob();
+          const blobUrl = URL.createObjectURL(blob);
+          setProfBlobUrl(blobUrl);
+        } else {
+          const cache = await caches.open('mon-site-logo');
+          const response =await cache.match('/img/logo.png');
+          const blob = await response.blob();
+          const blobUrl = URL.createObjectURL(blob);
+          setProfBlobUrl(blobUrl);
+        }
+      } catch (error) {
+        console.error('Error fetching video:', error);
+      }
+    };
+    fetchProfile(video.Photo)
   }, [online, video]);
   return (
     <>
@@ -69,16 +90,16 @@ function Video({ video }) {
             <div className="videoName font-semibold lg:text-[18px] text-[18px]">{video.Title}</div>
             <div className="profilChannel  flex justify-start items-center space-x-2  cursor-pointer ">
               {
-                video.Photo && online?
+                video.Photo?
                   <Image width={500} height={500} alt='profile'
                     className=" w-10  h-10 my-1 ml-15 rounded-full "
-                    src={`${process.env.NEXT_PUBLIC_URL}/Thumbnails/${video.Photo}`}
+                    src={online || !profBlobUrl ? `${process.env.NEXT_PUBLIC_URL}/Thumbnails/${video.Photo}`: profBlobUrl}
                     priority={true} placeholder='blur'
                     blurDataURL="data:image/png;base64,...(base64-encoded image data)" />
                   :
                   <Image width={500} height={500} alt='profile'
                     className=" w-10  h-10 my-1 ml-15 rounded-full "
-                    src={`/img/logo.png`}
+                    src={online || !profBlobUrl ?`/img/logo.png`:profBlobUrl}
                     priority={true} placeholder='blur'
                     blurDataURL="data:image/png;base64,...(base64-encoded image data)" />
               }
