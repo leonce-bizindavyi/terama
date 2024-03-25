@@ -323,8 +323,12 @@ function Navbar(props) {
                 </button>
 
                 <button ref={compoRef} id="image" className="p-0">
+                  {auto.session.Photo ?
                   <Image width={80} height={80} className="w-8 h-8 rounded-full" title={`${auto.session.PageName}`}
-                    src={profBlobUrl} alt='profile' onClick={() => handleAcPop()} />
+                  src={online ? `${process.env.NEXT_PUBLIC_URL}/Thumbnails/${auto.session.Photo}`:profBlobUrl} alt='profile' onClick={() => handleAcPop()} />
+                  :
+                  <Image width={80} height={80} className="w-8 h-8 rounded-full" title={`${auto.session.PageName}`}
+                    src={online ? "/img/logo.png":profBlobUrl} alt='profile' onClick={() => handleAcPop()} />}
                 </button>
               </div>
             }
