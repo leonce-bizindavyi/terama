@@ -18,7 +18,7 @@ function HomePage({ videos }) {
 
 export default HomePage
 export async function getServerSideProps() {
-  const response = await fetch(`http://localhost:3000/api/posts/slides/0/20`)
+  const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/posts/slides/0/10`)
   const data = await response.json()
   return {
     props: {
