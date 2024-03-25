@@ -6,6 +6,7 @@ function Cached({ video }) {
   console.log('video cache:', video);
   const [online, setOnline] = useState(true);
   const [thumbnailUrl, setThumbnailUrl] = useState(null);
+  const [profBlobUrl, setProfBlobUrl] = useState(null);
 
   useEffect(() => {
     const handleOnlineStatusChange = () => {
@@ -39,8 +40,32 @@ function Cached({ video }) {
     if (!online && video && video.Image) {
       getThumbnailFromCache();
     }
+    
+
+    const fetchProfile = async (photo) => {
+      try {
+        if (photo && !online) {
+          const cache = await caches.open('mon-site-logo')
+          const response = await cache.match(`/Thumbnails/${photo}`);
+          const blob = await response.blob();
+          const blobUrl = URL.createObjectURL(blob);
+          setProfBlobUrl(blobUrl);
+        } else {
+          const cache = await caches.open('mon-site-logo');
+          const response =await cache.match('/img/logo.png');
+          const blob = await response.blob();
+          const blobUrl = URL.createObjectURL(blob);
+          setProfBlobUrl(blobUrl);
+        }
+      } catch (error) {
+        console.error('Error fetching video:', error);
+      }
+    };
+    fetchProfile(video.Photo)
   }, [online, video]);
 
+
+  
   const handlePlayVideo = async () => {
     if (!online && video && video.Video) {
       try {
@@ -63,7 +88,7 @@ function Cached({ video }) {
     <>
       <div className="video1 flex flex-row w-full justify-between md:px-6 mb-6 cursor-pointer" onClick={handlePlayVideo}>
         <div className="flex flex-col m-0 md:flex-row h-[260px] md:h-[150px] bg-gray-100 space-x-1 md:space-x-5 w-[100%] md:w-[80%] md:rounded-2xl">
-          <div className="w-full w-[250px] h-[210px] md:h-[130px] md:h-[150px] md:rounded-2xl overflow-hidden">
+          <div className=" w-[250px] h-[210px] md:h-[150px] md:rounded-2xl overflow-hidden">
             <Link href={`/Watch?v=${video.uniid}`}>
               {thumbnailUrl ? (
                 <Image
@@ -89,13 +114,24 @@ function Cached({ video }) {
             <p className="text-sm md:text-base">{video.Body ? video.Body.split('\n').slice(0, 2).join('\n') : ''}</p>
             <Link href={`/profile?c=${video.Uuid}`}>
               <div className="description flex items-center text-sm">
+                {video.Photo ?
+                <Image
+                width={80}
+                height={80}
+                alt="profile"
+                className="lg:w-10 w-8 lg:h-10 h-8 my-1 ml-15 rounded-full"
+                src={online || !profBlobUrl ? `/Thumbnails/${video.Photo}`: profBlobUrl}
+              />
+                :
                 <Image
                   width={80}
                   height={80}
                   alt="profile"
                   className="lg:w-10 w-8 lg:h-10 h-8 my-1 ml-15 rounded-full"
-                  src={`/Thumbnails/${video.Photo}`}
+                  src={online || !profBlobUrl ? `/img/logo.png`: profBlobUrl}
                 />
+                }
+                
                 <p className="nom ml-2">{video.page}</p>
               </div>
             </Link>
