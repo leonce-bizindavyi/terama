@@ -26,6 +26,7 @@ function Videos() {
     const response = await fetch(`/api/posts/${user}/0/6`)
     const data = await response.json()
     if (data[0]) setVideos(data)
+    console.log(data)
     if (data) setLoad(true)
   }
 
