@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['localhost', 'terama.vercel.app'],
+    domains: ['localhost', 'terama-xi.vercel.app'],
   },
 };
 
