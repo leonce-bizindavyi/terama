@@ -23,9 +23,9 @@ function Navbar(props) {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [notifCounter, setNotifCounter] = useState(0);
   const [liste_notification, setliste] = useState([]);
-  const [profBlobUrl, setProfBlobUrl] = useState('/img/logo.png');
-  const [logo1, setLogo1] = useState('/logo/TeramaFlixpic.png')
-  const [logo2, setLogo2] = useState('/logo/TeramaFlixnam.png')
+  const [profBlobUrl, setProfBlobUrl] = useState(null);
+  const [logo1, setLogo1] = useState(null)
+  const [logo2, setLogo2] = useState(null)
   const [create, setCreate] = useState('/img/create_video.png')
   const compoRef = useRef(null);
   const sideBarRef = useRef(null);
@@ -124,31 +124,35 @@ function Navbar(props) {
     }
   };
   useEffect(() => {
-    const fetchLogos = async () => {
-      try {
-        const resp1 = await fetch('/logo/TeramaFlixpic.png');
-        const resp2 = await fetch('/logo/TeramaFlixnam.png');
-        const respc = await fetch('/img/create_video.png');
-        const blob1 = await resp1.blob();
-        const blob2 = await resp2.blob();
-        const blobc = await respc.blob();
-        setLogo1(URL.createObjectURL(blob1))
-        setLogo2(URL.createObjectURL(blob2))
-        setCreate(URL.createObjectURL(blobc))
-      } catch (error) {
-        console.error('Error fetching video:', error);
-      }
-    };
-    fetchLogos()
+    if(!online){
+      const fetchLogos = async () => {
+        try {
+          const cache1 = await caches.open('mon-site-logo');
+          const cache2 = await caches.open('mon-site-logo');
+          const resp1 = await cache1.match('/logo/TeramaFlixpic.png');
+          const resp2 =await cache2.match('/logo/TeramaFlixnam.png');
+          const blob1 = await resp1.blob();
+          const blob2 = await resp2.blob();
+          setLogo1(URL.createObjectURL(blob1))
+          setLogo2(URL.createObjectURL(blob2))
+        } catch (error) {
+          console.error('Error fetching video:', error);
+        }
+      };
+      fetchLogos()
+
+    }
     const fetchProfile = async (photo) => {
       try {
-        if (photo && online) {
-          const response = await fetch(`/Thumbnails/${photo}`);
+        if (photo && !online) {
+          const cache = await caches.open('mon-site-logo')
+          const response = await cache.match(`/Thumbnails/${photo}`);
           const blob = await response.blob();
           const blobUrl = URL.createObjectURL(blob);
           setProfBlobUrl(blobUrl);
         } else {
-          const response = await fetch(`/img/logo.png`);
+          const cache = await caches.open('mon-site-logo');
+          const response =await cache.match('/img/logo.png');
           const blob = await response.blob();
           const blobUrl = URL.createObjectURL(blob);
           setProfBlobUrl(blobUrl);
@@ -268,8 +272,8 @@ function Navbar(props) {
               </div>
 
               <div className="logo ml-4 flex-initial flex flex-col sm:flex-row sm:items-center sm:justify-start w-10 h-11 sm:w-64 sm:h-full items-center justify-center sm:static ml-/10 ">
-                <Link href="/"> <Image width={80} height={80} src='/logo/TeramaFlixpic.png' className=" w-8 h-8 sm:w-[2.8rem] sm:h-[2.8rem] my-1" alt="logo" /></Link>
-                <Link href="/"> <Image width={90} height={90} src='/logo/TeramaFlixnam.png' alt="logo" className=" hidden sm:block w-[4rem] h-[1rem] sm:w-[8rem] sm:h-[1rem] " /></Link>
+                <Link href="/"> <Image width={80} height={80} src={online ? '/logo/TeramaFlixpic.png': logo1} className=" w-8 h-8 sm:w-[2.8rem] sm:h-[2.8rem] my-1" alt="logo" /></Link>
+                <Link href="/"> <Image width={90} height={90} src={online ? '/logo/TeramaFlixnam.png' : logo2} alt="logo" className=" hidden sm:block w-[4rem] h-[1rem] sm:w-[8rem] sm:h-[1rem] " /></Link>
               </div>
 
             </div>
